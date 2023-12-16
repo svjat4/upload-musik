@@ -1,0 +1,95 @@
+{% extends 'music/base.html' %}
+{% block title %}{{ album }}{% endblock %}
+{% block albums_active %}active{% endblock %}
+
+{% block body %}
+<div class="container mt-4 songs-container">
+
+    <div class="row">
+
+        <!-- Left Album Info -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <a href="{% url 'music:detail' album.id %}">
+                        {% if album.album_logo %}
+                            <img src="{{ album.album_logo.url }}" class="img-fluid rounded">
+                        {% else %}
+                            <h3>No image to display</h3>
+                        {% endif %}
+                    </a>
+                    <h1 class="card-title">{{ album.album_title }} <small>{{ album.genre }}</small></h1>
+                    <h2>{{ album.artist }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Song Info -->
+        <div class="col-md-9">
+
+            <ul class="nav nav-pills mb-3" style="margin-bottom: 10px;">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'music:detail' album.id %}">View All</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'music:create_song' album.id %}">Add New Song</a>
+                </li>
+            </ul>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <h3 class="card-title">All Songs</h3>
+
+                    {% if error_message %}
+                        <p class="text-danger"><strong>{{ error_message }}</strong></p>
+                    {% endif %}
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Audio File</th>
+                            <th>Favorite</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for song in album.song_set.all %}
+                            <tr>
+                                <td>{{ song.song_title }}</td>
+                                <td>
+                                    <audio controls>
+                                        <source src="{{ song.audio_file.url }}" type="audio/mp3">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                </td>
+                                <td>
+                                    <a href="{% url 'music:favorite' song.id %}" class="btn-favorite">
+                                        <span class="glyphicon glyphicon-star {% if song.is_favorite %}active{% endif %}"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <form action="{% url 'music:delete_song' album.id song.id %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="song_id" value="{{ song.id }}" />
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <span class="glyphicon glyphicon-remove"></span>&nbsp; Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

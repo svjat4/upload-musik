@@ -1,0 +1,33 @@
+/* Mengganti Gambar Latar Belakang */
+body {
+    background: white url("/musica/music/static/images/bg.jpg");
+}
+
+/* Mengubah Gaya daftar Kesalahan (Error List) */
+ul.errorlist {
+    padding-left: 0;
+}
+
+ul.errorlist > li {
+    list-style: none;
+}
+
+/* Menghilangkan Batas Bulat Pada Navbar */
+.navbar {
+    border-radius: 0;
+}
+
+/* Mengganti Font untuk Navbar Brand */
+.navbar-brand {
+    font-family: 'Nama-Font', sans-serif; /* Gantilah 'Nama-Font' dengan nama font yang Anda inginkan */
+}
+
+/* Warna Bintang (Favorite Icon) */
+.glyphicon-star {
+    color: #CCCCCC; /* Warna default */
+    font-size: 16px;
+}
+
+.glyphicon-star.active {
+    color: #FDB230; /* Warna aktif */
+}

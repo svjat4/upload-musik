@@ -1,0 +1,100 @@
+{% extends 'music/base.html' %}
+{% block title %}All Songs{% endblock %}
+{% block songs_active %}active{% endblock %}
+
+{% block body %}
+<div class="container-fluid songs-container">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <ul class="nav nav-pills mb-3" style="margin-bottom: 10px;">
+                <li class="nav-item">
+                    <a class="nav-link {% if filter_by == 'all' %}active{% endif %}" href="{% url 'music:songs' 'all' %}">View All</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if filter_by == 'favorites' %}active{% endif %}" href="{% url 'music:songs' 'favorites' %}">Favorites</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">All Songs</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Song Title</th>
+                                <th>Artist</th>
+                                <th>Audio File</th>
+                                <th>Album</th>
+                                <th>Favorite</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for song in song_list %}
+                                <tr>
+                                    <td>{{ song.song_title }}</td>
+                                    <td>{{ song.album.artist }}</td>
+                                    <td>
+                                        <audio controls>
+                                            <source src="{{ song.audio_file.url }}" type="audio/mp3">
+                                            Your browser does not support the audio element.
+                                        </audio>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'music:detail' song.album.id %}">
+                                            <img src="{{ song.album.album_logo.url }}" class="img-responsive" style="width: 20px; float: left; margin-right: 10px;" />
+                                        </a>
+                                        <a href="{% url 'music:detail' song.album.id %}">{{ song.album.album_title }}</a>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'music:favorite' song.id %}" class="btn-favorite" data-songid="{{ song.id }}">
+                                            {% if song.is_favorite %}
+                                                <span class="glyphicon glyphicon-star active"></span>
+                                            {% else %}
+                                                <span class="glyphicon glyphicon-star"></span>
+                                            {% endif %}
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.btn-favorite').click(function(e) {
+            e.preventDefault();
+            var songId = $(this).data('songid');
+            $.ajax({
+                type: 'POST',
+                url: '{% url "music:favorite" 0 %}'.replace('0', songId),
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the star icon based on the server response
+                        var starIcon = $(e.target).find('.glyphicon-star');
+                        starIcon.toggleClass('active', !starIcon.hasClass('active'));
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}
